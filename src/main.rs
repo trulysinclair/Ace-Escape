@@ -6,8 +6,10 @@ use bevy::{
     math::bounding::{Aabb2d, BoundingCircle, BoundingVolume, IntersectsVolume},
     prelude::*,
 };
+use score::Score;
 
 mod stepping;
+mod score;
 
 // These constants are defined in `Transform` units.
 // Using the default 2D camera they correspond 1:1 with screen pixels.
@@ -39,16 +41,12 @@ const GAP_BETWEEN_BRICKS: f32 = 5.0;
 const GAP_BETWEEN_BRICKS_AND_CEILING: f32 = 20.0;
 const GAP_BETWEEN_BRICKS_AND_SIDES: f32 = 20.0;
 
-const SCOREBOARD_FONT_SIZE: f32 = 33.0;
-const SCOREBOARD_TEXT_PADDING: Val = Val::Px(5.0);
-
 const BACKGROUND_COLOR: Color = Color::srgb(0.9, 0.9, 0.9);
 const PADDLE_COLOR: Color = Color::srgb(0.3, 0.3, 0.7);
 const BALL_COLOR: Color = Color::srgb(1.0, 0.5, 0.5);
 const BRICK_COLOR: Color = Color::srgb(0.5, 0.5, 1.0);
 const WALL_COLOR: Color = Color::srgb(0.8, 0.8, 0.8);
 const TEXT_COLOR: Color = Color::srgb(0.5, 0.5, 1.0);
-const SCORE_COLOR: Color = Color::srgb(1.0, 0.5, 0.5);
 
 fn main() {
     App::new()
@@ -59,7 +57,6 @@ fn main() {
                 .add_schedule(FixedUpdate)
                 .at(Val::Percent(35.0), Val::Percent(50.0)),
         )
-        .insert_resource(Score(0))
         .insert_resource(ClearColor(BACKGROUND_COLOR))
         .add_event::<CollisionEvent>()
         .add_systems(Startup, setup)
@@ -76,7 +73,7 @@ fn main() {
                 // `chain`ing systems together runs them in order
                 .chain(),
         )
-        .add_systems(Update, update_scoreboard)
+        
         .run();
 }
 
@@ -167,13 +164,6 @@ impl Wall {
     }
 }
 
-// This resource tracks the game's score
-#[derive(Resource, Deref, DerefMut)]
-struct Score(usize);
-
-#[derive(Component)]
-struct ScoreboardUi;
-
 // Add the game's entities to our world
 fn setup(
     mut commands: Commands,
@@ -212,30 +202,7 @@ fn setup(
         Velocity(INITIAL_BALL_DIRECTION.normalize() * BALL_SPEED),
     ));
 
-    // Scoreboard
-    commands.spawn((
-        Text::new("Score: "),
-        TextFont {
-            font_size: SCOREBOARD_FONT_SIZE,
-            ..default()
-        },
-        TextColor(TEXT_COLOR),
-        ScoreboardUi,
-        Node {
-            position_type: PositionType::Absolute,
-            top: SCOREBOARD_TEXT_PADDING,
-            left: SCOREBOARD_TEXT_PADDING,
-            ..default()
-        },
-        children![(
-            TextSpan::default(),
-            TextFont {
-                font_size: SCOREBOARD_FONT_SIZE,
-                ..default()
-            },
-            TextColor(SCORE_COLOR),
-        )],
-    ));
+    
 
     // Walls
     commands.spawn(Wall::new(WallLocation::Left));
@@ -327,14 +294,6 @@ fn apply_velocity(mut query: Query<(&mut Transform, &Velocity)>, time: Res<Time>
         transform.translation.x += velocity.x * time.delta_secs();
         transform.translation.y += velocity.y * time.delta_secs();
     }
-}
-
-fn update_scoreboard(
-    score: Res<Score>,
-    score_root: Single<Entity, (With<ScoreboardUi>, With<Text>)>,
-    mut writer: TextUiWriter,
-) {
-    *writer.text(*score_root, 1) = score.to_string();
 }
 
 fn check_for_collisions(
