@@ -12,11 +12,11 @@ fn main() {
         .run();
 }
 
-// #[derive(Resource, Deref)]
-// struct CorruptionAudio(Handle<AudioSource>);
-
 #[derive(Component)]
 struct CorruptionSound;
+
+#[derive(Component)]
+struct Asteroid;
 
 fn setup(
     mut commands: Commands,
@@ -32,13 +32,9 @@ fn setup(
     ));
     commands.spawn((
         AudioPlayer::new(asset_server.load("sounds/corruption.ogg")),
+        PlaybackSettings::LOOP.with_spatial(true),
         CorruptionSound,
     ));
-
-    // let corruption_sound = asset_server.load("sounds/corruption.ogg");
-    // let sound = corruption_sound.clone();
-    // commands.insert_resource(CorruptionAudio(corruption_sound));
-    // let t = commands.spawn((AudioPlayer(sound.clone()), PlaybackSettings::DESPAWN));
 }
 
 fn update_speed(music_controller: Query<&AudioSink, With<CorruptionSound>>, time: Res<Time>) {
