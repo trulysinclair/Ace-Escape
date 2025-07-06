@@ -1,22 +1,29 @@
 use crate::player::Player;
-use crate::CorruptionSound;
-use bevy::app::Startup;
-use bevy::asset::{AssetServer, Assets};
-use bevy::audio::{AudioPlayer, PlaybackSettings};
-use bevy::color::palettes::tailwind::RED_700;
-use bevy::color::Color;
-use bevy::prelude::{
-    Circle, ColorMaterial, Commands, Component, Local, Mesh, Mesh2d, MeshMaterial2d, Plugin, Query,
-    Res, ResMut, Transform, With,
+use bevy::{
+    app::{Startup, Update},
+    asset::{AssetServer, Assets},
+    audio::{AudioPlayer, AudioSink, AudioSinkPlayback, PlaybackSettings},
+    color::palettes::tailwind::RED_700,
+    color::Color,
+    input::ButtonInput,
+    math::ops,
+    prelude::{
+        Circle, ColorMaterial, Commands, Component, KeyCode, Local, Mesh, Mesh2d, MeshMaterial2d,
+        Plugin, Query, Res, ResMut, Transform, With,
+    },
+    time::Time,
 };
-use bevy::time::Time;
 use std::time::Duration;
 
 pub struct EnemyPlugin;
 
+#[derive(Component)]
+pub struct CorruptionSound;
+
 impl Plugin for EnemyPlugin {
     fn build(&self, app: &mut bevy::prelude::App) {
-        app.add_systems(Startup, setup);
+        app.add_systems(Startup, setup)
+            .add_systems(Update, (update_speed, pause));
     }
 }
 
@@ -52,4 +59,25 @@ fn deimos_weapon_system(
     query_deimos: Query<&Transform, With<Deimos>>,
     mut last_shot: Local<Option<Duration>>,
 ) {
+}
+
+fn update_speed(music_controller: Query<&AudioSink, With<CorruptionSound>>, time: Res<Time>) {
+    let Ok(sink) = music_controller.single() else {
+        return;
+    };
+
+    sink.set_speed((ops::sin(time.elapsed_secs() / 5.0) + 1.0).max(0.1))
+}
+
+fn pause(
+    keyboard_input: Res<ButtonInput<KeyCode>>,
+    music_controller: Query<&AudioSink, With<CorruptionSound>>,
+) {
+    let Ok(sink) = music_controller.single() else {
+        return;
+    };
+
+    if keyboard_input.just_pressed(KeyCode::Space) {
+        sink.toggle_playback();
+    }
 }
