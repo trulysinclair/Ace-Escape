@@ -1,8 +1,9 @@
 mod enemy;
 mod player;
 
+use crate::enemy::EnemyPlugin;
 use bevy::{
-    color::palettes::tailwind::{RED_700, SKY_700, SLATE_950},
+    color::palettes::tailwind::{SKY_700, SLATE_950},
     prelude::*,
 };
 
@@ -12,7 +13,7 @@ fn main() {
     App::new()
         .add_systems(Startup, setup)
         .add_systems(Update, (update_speed, pause))
-        .add_plugins(DefaultPlugins)
+        .add_plugins((DefaultPlugins, EnemyPlugin))
         .insert_resource(ClearColor(background_color))
         .run();
 }
@@ -37,16 +38,6 @@ fn setup(
         MeshMaterial2d(materials.add(Color::from(SKY_700))),
         Transform::from_translation(Vec3::new(0.0, 50.0, 0.0)),
         Visibility::default(),
-    ));
-
-    // Emitter
-    commands.spawn((
-        Mesh2d(meshes.add(Circle::new(15.0))),
-        MeshMaterial2d(materials.add(Color::from(RED_700))),
-        Transform::default(),
-        AudioPlayer::new(asset_server.load("sounds/corruption.ogg")),
-        PlaybackSettings::LOOP.with_spatial(true),
-        CorruptionSound,
     ));
 }
 
