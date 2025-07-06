@@ -1,4 +1,5 @@
 use crate::player::Player;
+use bevy::prelude::{Resource, Single, StableInterpolate, Without};
 use bevy::{
     app::{Startup, Update},
     asset::{AssetServer, Assets},
@@ -23,15 +24,15 @@ pub struct CorruptionSound;
 impl Plugin for EnemyPlugin {
     fn build(&self, app: &mut bevy::prelude::App) {
         app.add_systems(Startup, setup)
-            .add_systems(Update, (update_speed, pause));
+            .add_systems(Update, (update_speed, pause, follow_player));
     }
 }
 
 #[derive(Component)]
 pub struct Deimos;
 
-#[derive(Component)]
-pub struct DeimosOwned;
+#[derive(Resource)]
+struct DecayRate(f32);
 
 fn setup(
     mut commands: Commands,
@@ -47,7 +48,10 @@ fn setup(
         AudioPlayer::new(asset_server.load("sounds/corruption.ogg")),
         PlaybackSettings::LOOP.with_spatial(true),
         CorruptionSound,
+        Deimos,
     ));
+
+    commands.insert_resource(DecayRate(1.0));
 }
 
 fn deimos_movement(mut query: Query<&mut Transform, With<Deimos>>, time: Res<Time>) {}
@@ -80,4 +84,18 @@ fn pause(
     if keyboard_input.just_pressed(KeyCode::Space) {
         sink.toggle_playback();
     }
+}
+
+fn follow_player(
+    mut enemy: Single<&mut Transform, With<Deimos>>,
+    player: Single<&Transform, (With<Player>, Without<Deimos>)>,
+    decay_rate: Res<DecayRate>,
+    time: Res<Time>,
+) {
+    let decay_rate = decay_rate.0;
+    let delta_time = time.delta_secs();
+
+    enemy
+        .translation
+        .smooth_nudge(&player.translation, decay_rate, delta_time);
 }

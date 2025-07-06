@@ -34,6 +34,7 @@ fn setup(
         listener.clone(),
         Transform::from_translation(Vec3::new(0.0, 50.0, 0.0)),
         Visibility::default(),
+        Player,
     ));
 }
 
