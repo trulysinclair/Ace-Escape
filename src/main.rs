@@ -2,6 +2,7 @@ mod enemy;
 mod player;
 
 use crate::{enemy::EnemyPlugin, player::PlayerPlugin};
+use bevy::audio::{AudioPlugin, SpatialScale};
 use bevy::{color::palettes::tailwind::SLATE_950, prelude::*};
 
 fn main() {
@@ -9,7 +10,10 @@ fn main() {
 
     App::new()
         .add_systems(Startup, setup)
-        .add_plugins(DefaultPlugins)
+        .add_plugins(DefaultPlugins.set(AudioPlugin {
+            default_spatial_scale: SpatialScale::new_2d(1. / 100.0),
+            ..default()
+        }))
         .add_plugins((PlayerPlugin, EnemyPlugin))
         .insert_resource(ClearColor(background_color))
         .run();
