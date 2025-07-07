@@ -1,4 +1,12 @@
-use bevy::prelude::Component;
+use bevy::prelude::*;
+
+pub struct AsteroidPlugin;
+
+impl Plugin for AsteroidPlugin {
+    fn build(&self, app: &mut App) {
+        todo!()
+    }
+}
 
 #[derive(Component)]
 struct Asteroid;
