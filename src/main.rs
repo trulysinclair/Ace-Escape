@@ -10,10 +10,20 @@ fn main() {
 
     App::new()
         .add_systems(Startup, setup)
-        .add_plugins(DefaultPlugins.set(AudioPlugin {
-            default_spatial_scale: SpatialScale::new_2d(1. / 100.0),
-            ..default()
-        }))
+        .add_plugins(
+            DefaultPlugins
+                .set(AudioPlugin {
+                    default_spatial_scale: SpatialScale::new_2d(1. / 100.0),
+                    ..default()
+                })
+                .set(WindowPlugin {
+                    primary_window: Some(Window {
+                        title: "Ace Escape".into(),
+                        ..default()
+                    }),
+                    ..default()
+                }),
+        )
         .add_plugins((PlayerPlugin, EnemyPlugin))
         .insert_resource(ClearColor(background_color))
         .run();
