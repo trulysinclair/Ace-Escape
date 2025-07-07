@@ -1,17 +1,18 @@
+mod asteroids;
 mod enemy;
+mod game;
 mod menu;
 mod menu_example;
 mod player;
 mod splash_screen;
 
-use crate::{enemy::EnemyPlugin, player::PlayerPlugin, splash_screen::SplashScreenPlugin};
+use crate::game::GamePlugin;
+use crate::splash_screen::SplashScreenPlugin;
 use ace_escape::GameState;
 use bevy::audio::{AudioPlugin, SpatialScale};
-use bevy::{color::palettes::tailwind::SLATE_950, prelude::*};
+use bevy::prelude::*;
 
 fn main() {
-    let background_color: Color = Color::from(SLATE_950);
-
     App::new()
         .add_systems(Startup, setup)
         .add_plugins(
@@ -28,9 +29,7 @@ fn main() {
                     ..default()
                 }),
         )
-        .add_plugins((SplashScreenPlugin))
-        .add_plugins((PlayerPlugin, EnemyPlugin))
-        .insert_resource(ClearColor(background_color))
+        .add_plugins((SplashScreenPlugin, GamePlugin))
         .init_state::<GameState>()
         .run();
 }

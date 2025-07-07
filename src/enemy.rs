@@ -1,7 +1,11 @@
+use crate::game::OnGameScreen;
 use crate::player::Player;
-use bevy::prelude::{Resource, Single, StableInterpolate, Without};
+use ace_escape::GameState;
+use bevy::prelude::{
+    OnEnter, Resource, Single, StableInterpolate, Without,
+};
 use bevy::{
-    app::{Startup, Update},
+    app::Update,
     asset::{AssetServer, Assets},
     audio::{AudioPlayer, AudioSink, AudioSinkPlayback, PlaybackSettings},
     color::palettes::tailwind::RED_700,
@@ -23,7 +27,7 @@ pub struct CorruptionSound;
 
 impl Plugin for EnemyPlugin {
     fn build(&self, app: &mut bevy::prelude::App) {
-        app.add_systems(Startup, setup)
+        app.add_systems(OnEnter(GameState::Game), setup)
             .add_systems(Update, (update_speed, pause, follow_player));
     }
 }
@@ -49,6 +53,7 @@ fn setup(
         PlaybackSettings::LOOP.with_spatial(true),
         CorruptionSound,
         Deimos,
+        OnGameScreen,
     ));
 
     commands.insert_resource(DecayRate(1.0));

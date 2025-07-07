@@ -1,5 +1,7 @@
+use crate::game::OnGameScreen;
+use ace_escape::GameState;
 use bevy::{
-    app::Plugin, app::Startup, asset::Assets, color::palettes::tailwind::SKY_700, color::Color,
+    app::Plugin, asset::Assets, color::palettes::tailwind::SKY_700, color::Color,
     input::ButtonInput, math::Vec3, prelude::*,
 };
 
@@ -10,7 +12,7 @@ pub struct Player;
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut bevy::prelude::App) {
-        app.add_systems(Startup, setup)
+        app.add_systems(OnEnter(GameState::Game), setup)
             .add_systems(Update, movement);
     }
 }
@@ -30,6 +32,7 @@ fn setup(
         Transform::from_translation(Vec3::new(0.0, 50.0, 0.0)),
         Visibility::default(),
         Player,
+        OnGameScreen,
     ));
 }
 

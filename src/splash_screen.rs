@@ -14,7 +14,8 @@ impl Plugin for SplashScreenPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(OnEnter(GameState::Splash), setup)
             .add_systems(Update, countdown.run_if(in_state(GameState::Splash)))
-            .add_systems(OnExit(GameState::Splash), despawn_screen::<OnSplashScreen>);
+            .add_systems(OnExit(GameState::Splash), despawn_screen::<OnSplashScreen>)
+            .insert_resource(ClearColor(Color::BLACK));
     }
 }
 
@@ -30,6 +31,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             ..default()
         },
         OnSplashScreen,
+        BackgroundColor(Color::BLACK),
         children![(
             ImageNode::new(icon),
             Node {
@@ -49,6 +51,6 @@ fn countdown(
     mut timer: ResMut<SplashTimer>,
 ) {
     if timer.tick(time.delta()).finished() {
-        game_state.set(GameState::MainMenu)
+        game_state.set(GameState::Game)
     }
 }
