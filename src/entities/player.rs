@@ -1,58 +1,85 @@
 use crate::game::OnGameScreen;
 use ace_escape::GameState;
-use bevy::{
-    app::Plugin, asset::Assets, color::palettes::tailwind::SKY_700, color::Color,
-    input::ButtonInput, math::Vec3, prelude::*,
-};
+use bevy::prelude::*;
+
+const BOUNDS: Vec2 = Vec2::new(1200.0, 640.0);
 
 pub struct PlayerPlugin;
 
 #[derive(Component)]
-pub struct Player;
+pub struct Player {
+    movement_speed: f32,
+    rotation_speed: f32,
+}
 
 impl Plugin for PlayerPlugin {
-    fn build(&self, app: &mut bevy::prelude::App) {
+    fn build(&self, app: &mut App) {
         app.add_systems(OnEnter(GameState::Game), setup)
-            .add_systems(Update, movement);
+            .add_systems(FixedUpdate, movement)
+            .insert_resource(Time::<Fixed>::from_hz(60.0));
     }
 }
 
-fn setup(
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-) {
-    let listener = SpatialListener::new(400.);
+fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
+    let listener = SpatialListener::new(100.);
+    let ship_handle = asset_server.load("textures/player.png");
 
-    // Player
     commands.spawn((
-        Mesh2d(meshes.add(Rectangle::new(32.0, 32.0))),
-        MeshMaterial2d(materials.add(Color::from(SKY_700))),
+        Sprite {
+            image: ship_handle,
+            texture_atlas: None,
+            color: Default::default(),
+            flip_x: false,
+            flip_y: true,
+            custom_size: Option::from(Vec2::new(77., 41.)),
+            rect: None,
+            anchor: Default::default(),
+            image_mode: Default::default(),
+        },
         listener.clone(),
-        Transform::from_translation(Vec3::new(0.0, 50.0, 0.0)),
-        Visibility::default(),
-        Player,
+        Player {
+            movement_speed: 500.0,
+            rotation_speed: f32::to_radians(360.0),
+        },
         OnGameScreen,
     ));
 }
 
 fn movement(
-    keyboard: Res<ButtonInput<KeyCode>>,
     time: Res<Time>,
-    mut listener: Single<&mut Transform, With<SpatialListener>>,
+    keyboard: Res<ButtonInput<KeyCode>>,
+    query: Single<(&Player, &mut Transform)>,
 ) {
-    let speed = 360.;
+    let (player, mut transform) = query.into_inner();
 
-    if keyboard.pressed(KeyCode::ArrowRight) {
-        listener.translation.x += speed * time.delta_secs()
-    }
+    let mut rotation_factor = 0.0;
+    let mut movement_factor = 0.0;
+
     if keyboard.pressed(KeyCode::ArrowLeft) {
-        listener.translation.x -= speed * time.delta_secs()
+        rotation_factor += 1.0;
+    }
+    if keyboard.pressed(KeyCode::ArrowRight) {
+        rotation_factor -= 1.0;
     }
     if keyboard.pressed(KeyCode::ArrowUp) {
-        listener.translation.y += speed * time.delta_secs()
+        movement_factor += 1.0;
     }
-    if keyboard.pressed(KeyCode::ArrowDown) {
-        listener.translation.y -= speed * time.delta_secs()
-    }
+
+    // Update the ship rotation around the Z axis (perpendicular to the 2D plane of the screen)
+    transform.rotate_z(rotation_factor * player.rotation_speed * time.delta_secs());
+
+    // Get the ship's forward vector by applying the current rotation to the ships initial facing
+    // vector
+    let movement_direction = transform.rotation * Vec3::Y;
+    // Get the distance the ship will move based on direction, the ship's movement speed and delta
+    // time
+    let movement_distance = movement_factor * player.movement_speed * time.delta_secs();
+    // Create the change in translation using the new movement direction and distance
+    let translation_delta = movement_direction * movement_distance;
+    // Update the ship translation with our new translation delta
+    transform.translation += translation_delta;
+
+    // Bound the ship within the invisible level bounds
+    let extents = Vec3::from((BOUNDS / 2.0, 0.0));
+    transform.translation = transform.translation.min(extents).max(-extents);
 }

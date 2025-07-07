@@ -1,3 +1,3 @@
 mod asteroid;
-pub mod enemy;
+pub mod deimos;
 pub mod player;

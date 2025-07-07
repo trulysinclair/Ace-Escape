@@ -1,4 +1,4 @@
-use crate::entities::enemy::EnemyPlugin;
+use crate::entities::deimos::DeimosPlugin;
 use crate::entities::player::PlayerPlugin;
 use ace_escape::{despawn_screen, GameState};
 use bevy::color::palettes::tailwind::SLATE_950;
@@ -19,7 +19,7 @@ impl Plugin for GamePlugin {
                 update.run_if(in_state(GameState::Game).or(in_state(GameState::GameOver))),
             )
             .add_systems(OnExit(GameState::Game), despawn_screen::<OnGameScreen>)
-            .add_plugins((PlayerPlugin, EnemyPlugin))
+            .add_plugins((PlayerPlugin, DeimosPlugin))
             .insert_resource(ClearColor(background_color));
     }
 }
