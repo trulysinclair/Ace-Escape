@@ -1,11 +1,6 @@
 use bevy::{
-    app::{Plugin, Startup},
-    asset::Assets,
-    color::palettes::tailwind::SKY_700,
-    color::Color,
-    input::ButtonInput,
-    math::Vec3,
-    prelude::*,
+    app::Plugin, app::Startup, asset::Assets, color::palettes::tailwind::SKY_700, color::Color,
+    input::ButtonInput, math::Vec3, prelude::*,
 };
 
 pub struct PlayerPlugin;

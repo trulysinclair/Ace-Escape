@@ -1,7 +1,10 @@
 mod enemy;
+mod menu;
+mod menu_example;
 mod player;
+mod splash_screen;
 
-use crate::{enemy::EnemyPlugin, player::PlayerPlugin};
+use crate::{enemy::EnemyPlugin, player::PlayerPlugin, splash_screen::SplashScreenPlugin};
 use ace_escape::GameState;
 use bevy::audio::{AudioPlugin, SpatialScale};
 use bevy::{color::palettes::tailwind::SLATE_950, prelude::*};
@@ -25,6 +28,7 @@ fn main() {
                     ..default()
                 }),
         )
+        .add_plugins((SplashScreenPlugin))
         .add_plugins((PlayerPlugin, EnemyPlugin))
         .insert_resource(ClearColor(background_color))
         .init_state::<GameState>()
