@@ -1,9 +1,7 @@
+use crate::entities::player::Player;
 use crate::game::OnGameScreen;
-use crate::player::Player;
 use ace_escape::GameState;
-use bevy::prelude::{
-    OnEnter, Resource, Single, StableInterpolate, Without,
-};
+use bevy::prelude::{OnEnter, Resource, Single, StableInterpolate, Without};
 use bevy::{
     app::Update,
     asset::{AssetServer, Assets},

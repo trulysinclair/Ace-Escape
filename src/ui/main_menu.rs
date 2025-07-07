@@ -1,8 +1,8 @@
 use bevy::app::{App, Plugin};
 
-pub struct MenuPlugin;
+pub struct MainMenuPlugin;
 
-impl Plugin for MenuPlugin {
+impl Plugin for MainMenuPlugin {
     fn build(&self, app: &mut App) {
         todo!()
     }

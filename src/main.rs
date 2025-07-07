@@ -1,16 +1,13 @@
-mod asteroids;
-mod enemy;
+mod entities;
 mod game;
-mod menu;
 mod menu_example;
-mod player;
-mod splash_screen;
+mod ui;
 
 use crate::game::GamePlugin;
-use crate::splash_screen::SplashScreenPlugin;
 use ace_escape::GameState;
 use bevy::audio::{AudioPlugin, SpatialScale};
 use bevy::prelude::*;
+use ui::splash_screen::SplashScreenPlugin;
 
 fn main() {
     App::new()

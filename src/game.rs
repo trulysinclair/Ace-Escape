@@ -1,5 +1,5 @@
-use crate::enemy::EnemyPlugin;
-use crate::player::PlayerPlugin;
+use crate::entities::enemy::EnemyPlugin;
+use crate::entities::player::PlayerPlugin;
 use ace_escape::{despawn_screen, GameState};
 use bevy::color::palettes::tailwind::SLATE_950;
 use bevy::prelude::*;
