@@ -1,2 +1,2 @@
-pub mod main_menu;
+pub mod game_menu;
 pub mod splash_screen;

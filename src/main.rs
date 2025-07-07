@@ -4,6 +4,7 @@ mod menu_example;
 mod ui;
 
 use crate::game::GamePlugin;
+use crate::ui::game_menu::GameMenuPlugin;
 use ace_escape::GameState;
 use bevy::audio::{AudioPlugin, SpatialScale};
 use bevy::prelude::*;
@@ -26,7 +27,7 @@ fn main() {
                     ..default()
                 }),
         )
-        .add_plugins((SplashScreenPlugin, GamePlugin))
+        .add_plugins((SplashScreenPlugin, GameMenuPlugin, GamePlugin))
         .init_state::<GameState>()
         .run();
 }

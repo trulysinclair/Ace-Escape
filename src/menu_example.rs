@@ -390,7 +390,7 @@ mod menu {
 
         let right_icon = asset_server.load("textures/Game Icons/right.png");
         let wrench_icon = asset_server.load("textures/Game Icons/wrench.png");
-        let exit_icon = asset_server.load("textures/Game Icons/exitRight.png");
+        let exit_icon = asset_server.load("textures/Game Icons/exit.png");
 
         commands.spawn((
             Node {
