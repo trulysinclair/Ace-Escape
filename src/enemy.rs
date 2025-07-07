@@ -99,3 +99,5 @@ fn follow_player(
         .translation
         .smooth_nudge(&player.translation, decay_rate, delta_time);
 }
+
+pub fn deimos_laser_collision() {}

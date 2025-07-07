@@ -2,6 +2,7 @@ mod enemy;
 mod player;
 
 use crate::{enemy::EnemyPlugin, player::PlayerPlugin};
+use ace_escape::GameState;
 use bevy::audio::{AudioPlugin, SpatialScale};
 use bevy::{color::palettes::tailwind::SLATE_950, prelude::*};
 
@@ -26,6 +27,7 @@ fn main() {
         )
         .add_plugins((PlayerPlugin, EnemyPlugin))
         .insert_resource(ClearColor(background_color))
+        .init_state::<GameState>()
         .run();
 }
 
